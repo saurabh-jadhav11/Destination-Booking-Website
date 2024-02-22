@@ -1,0 +1,64 @@
+
+<% layout('layout/boiletplate.ejs')%>
+
+<div class="row">
+
+
+<div class="col-8 offset-2 new-text">
+
+<br><br>
+    <h3>Create a new Listing</h3>
+    <br>
+    <form method="post" action="/listings">
+    <div class="mb-3">
+        <label for="Title" class="form-lable">Title</label>
+        <input name="listing[title]" placeholder="Add a cathy title" type="text" class="form-control">
+    </div>
+
+    <div class="mb-3">
+
+        <label for="description" class="form-lable">Description</label>
+        <textarea name="listing[description]" class="form-control"></textarea>
+
+    </div>
+       
+    <div class="mb-3">
+
+        <label for="Image" class="form-lable">Image</label>
+        <input name="listing[image.url]" placeholder="enter URL/link"type="text" class="form-control">
+
+    </div>
+   
+       
+    <div class="mb-3">
+
+        <label for="location" class="form-lable">location</label>
+        <input name="listing[location]" placeholder="Raigad , Maharatra" type="text" class="form-control">
+
+    </div>
+   
+
+    <div class="row">
+
+        <div class="mb-3 col-md-4">
+
+            <label for="price" class="form-lable">Price</label>
+            <input name="listing[price]" placeholder="1200" type="number" class="form-control" >
+        </div>
+
+        <div class="mb-3 col-md-8">
+
+            <label for="country" class="form-lable">country</label>
+            <input name="listing[country]" placeholder="India" type="text" class="form-control">
+    
+        </div>
+        
+    
+    </div>
+        <br><br>
+        <button class="btn btn-dark">Add</button>
+    </form>
+    <br><br>
+</div>
+</div>
+
