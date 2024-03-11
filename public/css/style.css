@@ -13,7 +13,7 @@ body{
 
 .navbar{
     height: 5rem;
-    background-color: rgb(224, 224, 183);
+    background-color: rgb(247, 247, 246);
 }
 
 .fa-compass{
@@ -65,7 +65,7 @@ footer{
 
 /* cards */
 
-.card{
+.listing-card {
     border: none !important;
     
     margin-bottom: 2rem;
@@ -102,7 +102,7 @@ footer{
     background-color: beige;
 }
 
-.btn{
+.sub-btn{
     background-color: #fe424d !important;
     border: none !important;
 }
@@ -137,3 +137,5 @@ footer{
     padding-right: 0;
     margin-top: 1rem;
 }
+
+

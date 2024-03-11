@@ -1,11 +1,22 @@
 const express  = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const Listing = require("./models/listing.js");
+ const Listing = require("./models/listing.js");
 const ejsMate = require("ejs-mate");
 const methodOverride =require("method-override");
 
+const wrapAsync = require("./utils/wrapAsync.js");
+const ExpressError = require("./utils/ExpressError.js");
+const session = require("express-session");
+const flash = require("connect-flash");
+const {listingSchema,reviewSchema}= require("./schema.js");
+
+
+const Review = require("./models/review.js");
+
 app.use(methodOverride("_method"));
+const listings = require("./router/listing.js");
+const reviews = require("./router/reviews.js");
 
 
 
@@ -18,6 +29,28 @@ app.use(express.urlencoded({extended:true}));
 app.engine('ejs', ejsMate);
 
 app.use(express.static(path.join(__dirname,"/public")));
+
+//session
+let sesionOptions = {
+    secret:"mysupersecreate",
+    resave:false,
+    saveUninitialized:true,
+    cookie:{
+        expires: Date.now() + 7 * 24 * 60 *60 *1000,
+        maxAge: 7* 24 * 60 * 60 * 1000,
+        httpOnly:true, 
+    }
+}
+app.use(session(sesionOptions));
+
+//using flash
+app.use(flash());
+
+app.use((req,res,next)=>{
+    res.locals.msg = req.flash("sucess")
+    res.locals.error = req.flash("error")
+    next();
+})
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
@@ -40,6 +73,11 @@ app.get("/",(req,res)=>{
     res.send("working ");
 })
 
+
+
+
+
+
 // app.get("/testListing",async (req,res)=>{
 //     let sampleListing = new Listing({
 //         title:"The greate white house",
@@ -57,78 +95,24 @@ app.get("/",(req,res)=>{
 
 //index rout
 
-app.get("/listings",async(req,res)=>{
 
-   let allListings =await Listing.find();
-   
-   res.render('listings/index',{allListings});
+app.use("/listings",listings);
 
+//review 
+
+app.use("/listings/:id/review",reviews);
+
+//invalid address
+
+app.all("*",(req,res,next)=>{
+    next(new ExpressError(404,"Page Not Found!"));
 })
 
-//add rout
+//error handler
 
-app.get("/listings/new",(req,res)=>{
-    res.render("listings/new.ejs")
-})
+app.use((err,req,res,next)=>{
+    let {statusCode=500,message}=err;
 
-//show rout
-
-app.get("/listings/:id",async(req,res)=>{
-    let {id}=req.params;
-    
-    let listing = await Listing.findById(id);
-    res.render("listings/show.ejs",{listing});
-})
-
-
-//add rout
-
-app.post("/listings",async(req,res)=>{
-    const newListing = new Listing(req.body.listing);
-
-   await newListing.save();
-   
-   res.redirect("/listings");
-
-
-
-})
-
-//edit rout
-
-
-
-
-app.get("/listings/:id/edit",async(req,res)=>{
-
-    let {id}=req.params;
-    
-    let listing = await Listing.findById(id);
-    res.render("listings/edit.ejs",{listing});
-})
-
-
-//put
-
-app.put("/listings/:id",async(req,res)=>{
-   let {id} = req.params;
-
-   await Listing.findByIdAndUpdate(id,{...req.body.listing});
-    
-    res.redirect(`/listings`);
- 
-})
-
-
-
-
-//delete rout 
-app.delete("/listings/:id",async(req,res)=>{
-    let {id}=req.params;
-
-    let del =await Listing.findByIdAndDelete(id);
-
-    console.log(del);
-    res.redirect("/listings");
+    res.status(statusCode).render("error.ejs",{message});
 
 })
